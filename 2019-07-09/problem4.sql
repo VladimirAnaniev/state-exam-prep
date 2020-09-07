@@ -39,44 +39,21 @@
 --   networth – нетни активи;
 
 -- Забележка за всички таблици: 
--- Всички атрибути, които не участват във формирането на първичен ключ, могат да приемат nullстойност.
+-- Всички атрибути, които не участват във формирането на първичен ключ, могат да приемат null стойност.
 
 --------------------------------------------------------------------
 --------------------------------------------------------------------
 --------------------------------------------------------------------
 
--- 1. Попълнете липсващите части, обозначени с ______ така, 
--- че заявката да изведе за всяко студио името на студиото, 
--- заглавието и годината на филма,излязъл последно на екран за това студио.
-SELECT studioname, title, year 
-FROM movie m WHERE year = (SELECT MAX(year) FROM movie WHERE studioname = m.studioname);
+-- а) Да се огради буквата на заявката, която извежда име на студио и броя на филмите му, за тези студия с по-малко от два филма. 
+-- Студиата, които нямат нито един филм, НЕ трябва да присъстват в резултата.
+SELECT S.NAME, COUNT(M.TITLE) as CNT
+FROM STUDIO S 
+JOIN MOVIE M ON S.NAME = M.STUDIONAME
+GROUP BY S.NAME
+HAVING COUNT(M.TITLE) < 2;
 
--- 2. Попълнете липсващитечасти, обозначени с ______ така, 
--- че заявката да изведе име на продуцент и обща дължина на продуцираните от него филми, 
--- за тези продуценти, които имат поне един филм преди 1980 г.
-SELECT name, SUM(length)
-FROM movieexec 
-JOIN movie ON producerc# = cert#
-GROUP BY name
-HAVING MIN(year) < 1980;
-
--- 3. Попълнете липсващите части, обозначени с ______ така, 
--- че заявката да изведе име на актьорите, участвали във филми на продуценти с най-големи нетни активи, 
--- както и заглавие на филмите, в които са участвали, име на продуцент и нетни активи.
-SELECT starname, title, name, networth
-FROM starsin 
-JOIN movie ON movietitle = title AND movieyear = year
-JOIN (SELECT cert#, networth, name
-      FROM movieexec 
-      WHERE networth = (SELECT MAX(networth) FROM movieexec)) t ON t.cert# = producerc#;
-
--- 4. Заградете буквата назаявката, която извежда името на продуцента, 
--- заглавието и годината на всички филми, продуцирани от продуцента на филма ‘Interstellar’.
--- Б)
-SELECT t.name, title, year
-FROM movie m 
-JOIN (SELECT name, cert#
-      FROM movieexec
-      WHERE EXISTS (SELECT producerc#
-                    FROM movie
-                    WHERE title='Interstellar')) t ON m.producerc#=t.cert#;
+-- б) Да се напише заявка, която да изведе имената на всички продуценти с минимален нетен актив.
+SELECT name
+FROM MovieExec
+WHERE networth = (SELECT MIN(networth) FROM MovieExec)
