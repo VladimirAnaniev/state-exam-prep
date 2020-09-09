@@ -7,7 +7,7 @@
 var=1
 for i in 4 3 2 1
 do for j    
-    do if test $i –gt $#
+    do if [[ $i –gt $# ]]
         then  var=` expr $var \* $i`
             echo $var $j >> ff
         else continue        

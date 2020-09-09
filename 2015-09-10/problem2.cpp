@@ -16,15 +16,17 @@ struct Graph {
         if (from == to) {
             return true;
         }
+        visited[from] = true;
+
         for (int i = 0; i < n; i++) {
-            if (E[from][i] != -1) {
-                visited[from] = true;
+            if (E[from][i] != -1 && !visited[E[from][i]]) {
                 if (hasPath(E[from][i], to, visited)) {
                     return true;
                 }
-                visited[from] = false;
             }
         }
+
+        visited[from] = false;
         return false;
     }
 };
